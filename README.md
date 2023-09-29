@@ -1,4 +1,4 @@
-# MO_labs
-# Логистическая регрессия
-# 1. Реализовать алгоритм Логистической регрессии для двух классов
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?color=%2336BCF7&lines=Реализовать+алгоритм+Логистической+регрессии+для+двух+классов)](https://git.io/typing-svg)
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=450&size=30&duration=5100&pause=800&width=437&lines=%D0%9C%D0%B0%D1%88%D0%B8%D0%BD%D0%BD%D0%BE%D0%B5+%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5)](https://git.io/typing-svg)
+## Лабораторная № 1. Логистическая регрессия
+### Реализовать алгоритм Логистической регрессии для двух классов
+
