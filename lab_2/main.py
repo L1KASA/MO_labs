@@ -6,60 +6,63 @@ def write_to_file(predictions, filename):
     with open(filename, 'w') as file:
         result = ''
         
-        # оценка предсказаний
         for i in range(len(predictions)):
-            if predictions[i] > 0.5:
-                result += '1\n'
-            else:
-                result += '0\n'
+            result += str(predictions[i]) + '\n'
 
         file.write(result[:-1])
 
 class Naive_Bayes_Classifier:
-    def __init__(self, n, mean_X, mean_Y):
-        # инициализируем вес, смещение и вспомогательную переменную
-        self.n = n
-        #self.w = np.random.randn(n, 1) * 0.001
-        #self.b = np.random.randn() * 0.001
-        #self.report = 100
-        # массивы для хранения результатов функции потерь
-        #self.loss_history = []
-        self.mean_Y = mean_Y
-        self.mean_X = mean_X
 
-    def finding_sigmoid(self, Xi):
-        sigm = 0
-        for i in range(len(Xi)):
-            for j in range(len(Xi[0])):
-                sigm += (Xi[i][j] - self.mean_Y)**2
-        return (sigm / (self.n - 1)) ** 0.5
-    
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+        self._classes = np.unique(y) # выявляем, какие классы имеются
+        n_classes = len(self._classes)
+        # init
+        self._mean = np.zeros((n_classes, n_features), dtype=np.float64) 
+        self._var = np.zeros((n_classes, n_features), dtype=np.float64)
+        self._priors = np.zeros(n_classes, dtype=np.float64)
+
+        for i, c in enumerate(self._classes):
+            X_c = X[y == c]
+            self._mean[i, :] = X_c.mean(axis=0)
+            self._var[i, :] = X_c.var(axis=0)
+            self._priors[i] = X_c.shape[0] / float(n_samples)
+
+    def prediction(self, X):     
+        y_pred = [] # list с предсказаниями
+        for x_item in X: # проходимся по признакам
+            posteriors = []
+        # вычисление апостериорной вероятности для каждого класса
+            for i, c in enumerate(self._classes):
+                prior = np.log(self._priors[i])
+                new_var = self.likelyhood(i, x_item)
+                posterior = np.sum(np.log(new_var))
+                posteriors.append(prior + posterior)
+            # выбираем классовую переменную с максимальной вероятностью
+            y_pred.append(self._classes[np.argmax(posteriors)]) 
+        # возвращает класс с наибольшей апостериорной вероятностью
+        return y_pred
+
+    # функция правдоподобия возвращает вектор распределения Гаусса для конкретного X
+    def likelyhood(self, class_i, x):
+        mean = self._mean[class_i]
+        var = self._var[class_i]
+        return (1 / (np.sqrt(2 * np.pi * var))) * np.exp(-(x - mean)**2 / (2 * var))
 
 def main():
-    file_path = 'lab_1\in1.txt'
+    file_path = 'lab_2\input.txt'
     data = pd.read_table(file_path, sep=',')
-    #test_set = data[data.columns[0:5]].loc[(data['TT'] == 'test')].values.tolist()
-    #y_binar = data[data.columns[5]].loc[(data['TT'] == 'train')].values.tolist()
-    #x_tr = data[data.columns[0:5]].loc[(data['TT'] == 'train')].values.tolist()
-    x_tr1 = data[data.columns[0:5]].loc[(data['TT'] == 'train') & (data['target'] == 0)].values.tolist()
-    #y_tr = data[data.columns[0:5]].loc[(data['TT'] == 'train') & (data['target'] == 0)].values.tolist()
-    mu_X = data[data.columns[0:5]].loc[(data['TT'] == 'train') & (data['target'] == 1)].values.mean()
-    mu_Y = data[data.columns[0:5]].loc[(data['TT'] == 'train') & (data['target'] == 0)].values.mean()
-    #print(rr)
-    #print(x_tr1)
-    n = len(x_tr1[0]) # размер объекта
-    #print(n)
-    obj = Naive_Bayes_Classifier(n, mu_X, mu_Y)
-    #obj.finding_sigmoid(x_tr1)
-    #print(mu_X, mu_Y)
-    print(obj.finding_sigmoid(x_tr1))
+    X_test = data[data.columns[0:4]].loc[(data['TT'] == 'test')].values
+    X_train = data[data.columns[0:4]].loc[(data['TT'] == 'train')].values
+    y_train = data[data.columns[4]].loc[(data['TT'] == 'train')].values
 
-    #obj = Logistic_Regression(n) # создаем объект класса Logistic_Regression
-    #obj.fit(x_tr, y_binar, iters=200)
+    obj = Naive_Bayes_Classifier()
 
-    #predictions = obj.predict(test_set)
+    obj.fit(X_train, y_train)
 
-    #write_to_file(predictions, 'output.txt')
+    predictions = obj.prediction(X_test)
+
+    write_to_file(predictions, 'lab_2\output.txt')
 
 if __name__ == "__main__":
     main()
