@@ -84,5 +84,7 @@ def main():
 
     write_to_file(predictions, 'output.txt')
 
+    
+
 if __name__ == "__main__":
     main()

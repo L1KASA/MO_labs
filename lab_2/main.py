@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+import filecmp
 # запись классов в файл
 def write_to_file(predictions, filename):
     with open(filename, 'w') as file:
@@ -22,8 +22,8 @@ class Naive_Bayes_Classifier:
         self._var = np.zeros((n_classes, n_features), dtype=np.float64)
         self._priors = np.zeros(n_classes, dtype=np.float64)
 
-        for i, c in enumerate(self._classes):
-            X_c = X[y == c]
+        for i in self._classes:
+            X_c = X[y == i]
             self._mean[i, :] = X_c.mean(axis=0)
             self._var[i, :] = X_c.var(axis=0)
             self._priors[i] = X_c.shape[0] / float(n_samples)
@@ -33,7 +33,7 @@ class Naive_Bayes_Classifier:
         for x_item in X: # проходимся по признакам
             posteriors = []
         # вычисление апостериорной вероятности для каждого класса
-            for i, c in enumerate(self._classes):
+            for i in self._classes:
                 prior = np.log(self._priors[i])
                 new_var = self.likelyhood(i, x_item)
                 posterior = np.sum(np.log(new_var))
@@ -62,7 +62,9 @@ def main():
 
     predictions = obj.prediction(X_test)
 
-    write_to_file(predictions, 'lab_2\output.txt')
+    write_to_file(predictions, 'lab_2\output1.txt')
+
+    print(filecmp.cmp('lab_2\output.txt','lab_2\output1.txt'))
 
 if __name__ == "__main__":
     main()
